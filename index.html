@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominio de IA: De Cero a Experto | Curso Completo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #fdfbf7;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f9fafb;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --accent: #d97706;
+            --accent-light: #fef3c7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+        }
+
+        .dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #475569;
+            --accent: #f59e0b;
+            --accent-light: #78350f;
+            --success: #34d399;
+            --success-light: #064e3b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-secondary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .bg-primary { background-color: var(--bg-primary); }
+        .bg-secondary { background-color: var(--bg-secondary); }
+        .bg-tertiary { background-color: var(--bg-tertiary); }
+        .text-primary { color: var(--text-primary); }
+        .text-secondary { color: var(--text-secondary); }
+        .text-muted { color: var(--text-muted); }
+        .border-theme { border-color: var(--border-color); }
+
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .dark .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .week-card:hover { transform: translateY(-2px); transition: all 0.2s ease; }
+        .active-week { border-left: 4px solid var(--accent); background-color: var(--accent-light); }
+
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin: 0 auto; height: 300px; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-tertiary); }
+        ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+        .badge {
+            transition: all 0.3s ease;
+            filter: grayscale(100%) opacity(0.4);
+        }
+        .badge.unlocked {
+            filter: grayscale(0%) opacity(1);
+            animation: badgeUnlock 0.5s ease;
+        }
+        @keyframes badgeUnlock {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .tab-active {
+            border-bottom: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .price-tag-free { background: #d1fae5; color: #065f46; }
+        .price-tag-paid { background: #fef3c7; color: #92400e; }
+        .price-tag-cert { background: #dbeafe; color: #1e40af; }
+        .price-tag-best { background: #fef9c3; color: #854d0e; }
+
+        .dark .price-tag-free { background: #064e3b; color: #6ee7b7; }
+        .dark .price-tag-paid { background: #78350f; color: #fcd34d; }
+        .dark .price-tag-cert { background: #1e3a8a; color: #93c5fd; }
+        .dark .price-tag-best { background: #713f12; color: #fde047; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Header -->
+    <header class="bg-secondary border-b border-theme p-4 flex justify-between items-center shrink-0 z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-amber-100 dark:bg-amber-900 p-2 rounded-lg text-amber-600 dark:text-amber-400 font-bold text-xl">IA</div>
+            <div>
+                <h1 class="text-xl font-bold text-primary">Plan de Estudio: IA Generativa</h1>
+                <p class="text-xs text-muted">12 Semanas | De Cero a Experto</p>
+            </div>
+        </div>
+
+        <!-- Center: Progress & Streak -->
+        <div class="hidden md:flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl" id="streak-icon">🔥</span>
+                <div>
+                    <div class="text-xs text-muted">Racha</div>
+                    <div class="font-bold text-primary" id="streak-count">0 días</div>
+                </div>
+            </div>
+            <div class="w-48 flex flex-col gap-1">
+                <div class="flex justify-between text-xs font-semibold text-secondary">
+                    <span>Progreso</span>
+                    <span id="progress-text">0%</span>
+                </div>
+                <div class="w-full bg-tertiary rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="flex items-center gap-3">
+            <button onclick="openLibrary()" class="hidden sm:flex items-center gap-2 px-3 py-2 bg-tertiary hover:bg-amber-100 dark:hover:bg-amber-900 rounded-lg text-sm font-medium text-secondary transition-colors">
+                📚 Biblioteca
+            </button>
+            <button onclick="openBadges()" class="hidden sm:flex items-center gap-2 px-3 py-2 bg-tertiary hover:bg-amber-100 dark:hover:bg-amber-900 rounded-lg text-sm font-medium text-secondary transition-colors">
+                🏆 Logros
+            </button>
+            <button onclick="toggleDarkMode()" class="p-2 bg-tertiary hover:bg-amber-100 dark:hover:bg-amber-900 rounded-lg text-xl transition-colors" id="dark-mode-btn">
+                🌙
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- Sidebar: Timeline Navigation -->
+        <nav class="w-64 bg-secondary border-r border-theme overflow-y-auto hidden md:block shrink-0">
+            <div class="p-4">
+                <h3 class="text-xs font-bold text-muted uppercase tracking-wider mb-3">Cronograma (12 Semanas)</h3>
+                <div id="week-list" class="space-y-2"></div>
+
+                <!-- Sidebar Stats -->
+                <div class="mt-6 pt-4 border-t border-theme">
+                    <h4 class="text-xs font-bold text-muted uppercase tracking-wider mb-3">Estadísticas</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-muted">Semanas completadas</span>
+                            <span class="font-semibold text-primary" id="weeks-completed">0/12</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted">Tareas completadas</span>
+                            <span class="font-semibold text-primary" id="tasks-completed">0/0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted">Quizzes aprobados</span>
+                            <span class="font-semibold text-primary" id="quizzes-passed">0/12</span>
+                        </div>
+                    </div>
+
+                    <!-- Botones de gestión -->
+                    <div class="mt-4 pt-4 border-t border-theme space-y-2">
+                        <button onclick="exportProgress()" class="w-full text-xs py-2 px-3 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
+                            📥 Exportar Progreso
+                        </button>
+                        <button onclick="resetProgress()" class="w-full text-xs py-2 px-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors">
+                            🔄 Reiniciar Curso
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Nav Toggle -->
+        <div class="md:hidden fixed bottom-4 left-4 z-50 flex gap-2">
+            <button id="mobile-menu-btn" class="bg-amber-600 text-white p-3 rounded-full shadow-lg">
+                ☰
+            </button>
+            <button onclick="openLibrary()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg">
+                📚
+            </button>
+        </div>
+
+        <!-- Center: Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 bg-primary relative" id="main-content-area">
+
+            <!-- Intro Section -->
+            <div id="intro-view" class="max-w-3xl mx-auto space-y-8">
+                <div class="text-center space-y-4 py-10">
+                    <h2 class="text-3xl font-bold text-primary">Bienvenido a tu Transformación Digital</h2>
+                    <p class="text-lg text-secondary">Este plan interactivo te llevará de "no sé nada de IA" a dominar ChatGPT, Claude, Gemini y más en <strong>12 semanas</strong>.</p>
+                    <div class="flex flex-wrap justify-center gap-3 mt-4">
+                        <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full text-sm">✓ 100% en Español</span>
+                        <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm">✓ Recursos Gratuitos</span>
+                        <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full text-sm">✓ Sin Código</span>
+                    </div>
+                    <button onclick="loadWeek(0)" class="mt-6 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-colors">
+                        🚀 Comenzar Semana 1
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-secondary p-6 rounded-xl card-shadow border border-theme">
+                        <div class="text-3xl mb-3">🎯</div>
+                        <h3 class="font-bold text-lg mb-2 text-primary">Aprendizaje Práctico</h3>
+                        <p class="text-sm text-secondary">Videos cortos, ejercicios reales y resultados inmediatos.</p>
+                    </div>
+                    <div class="bg-secondary p-6 rounded-xl card-shadow border border-theme">
+                        <div class="text-3xl mb-3">🏆</div>
+                        <h3 class="font-bold text-lg mb-2 text-primary">Gamificación</h3>
+                        <p class="text-sm text-secondary">Gana badges, mantén tu racha y completa quizzes.</p>
+                    </div>
+                    <div class="bg-secondary p-6 rounded-xl card-shadow border border-theme">
+                        <div class="text-3xl mb-3">📚</div>
+                        <h3 class="font-bold text-lg mb-2 text-primary">+100 Recursos</h3>
+                        <p class="text-sm text-secondary">Biblioteca curada con cursos gratuitos y de pago.</p>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE MONETIZACIÓN -->
+                <div class="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-xl border border-green-200 dark:border-green-800">
+                    <div class="flex items-start gap-4">
+                        <div class="text-4xl">💰</div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-xl text-green-800 dark:text-green-300 mb-3">Oportunidades de Ganar Dinero con IA</h3>
+                            <p class="text-sm text-green-700 dark:text-green-400 mb-4">La IA no solo mejora tu productividad, también abre nuevas fuentes de ingresos. Aquí tienes las oportunidades más accesibles:</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white/60 dark:bg-black/20 p-4 rounded-lg">
+                                    <h4 class="font-bold text-green-800 dark:text-green-300 text-sm mb-2">🖊️ Freelance de Contenido</h4>
+                                    <ul class="text-xs text-green-700 dark:text-green-400 space-y-1">
+                                        <li>• Redacción de blogs y artículos ($50-500/artículo)</li>
+                                        <li>• Copywriting para anuncios y emails</li>
+                                        <li>• Gestión de redes sociales</li>
+                                        <li>• Plataformas: Fiverr, Upwork, Workana</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/60 dark:bg-black/20 p-4 rounded-lg">
+                                    <h4 class="font-bold text-green-800 dark:text-green-300 text-sm mb-2">📊 Servicios de Análisis</h4>
+                                    <ul class="text-xs text-green-700 dark:text-green-400 space-y-1">
+                                        <li>• Análisis de datos con IA (Excel + ChatGPT)</li>
+                                        <li>• Reportes automatizados para empresas</li>
+                                        <li>• Investigación de mercado</li>
+                                        <li>• Tarifas: $30-150/hora</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/60 dark:bg-black/20 p-4 rounded-lg">
+                                    <h4 class="font-bold text-green-800 dark:text-green-300 text-sm mb-2">🎨 Diseño y Creatividad</h4>
+                                    <ul class="text-xs text-green-700 dark:text-green-400 space-y-1">
+                                        <li>• Diseño de presentaciones con Canva/Gamma</li>
+                                        <li>• Creación de logos e identidad visual</li>
+                                        <li>• Edición de fotos con IA</li>
+                                        <li>• Tarifas: $25-200/proyecto</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/60 dark:bg-black/20 p-4 rounded-lg">
+                                    <h4 class="font-bold text-green-800 dark:text-green-300 text-sm mb-2">🤖 Consultoría de IA</h4>
+                                    <ul class="text-xs text-green-700 dark:text-green-400 space-y-1">
+                                        <li>• Enseñar a empresas a usar ChatGPT</li>
+                                        <li>• Crear prompts personalizados</li>
+                                        <li>• Automatizar flujos de trabajo</li>
+                                        <li>• Tarifas: $50-300/hora</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg border border-yellow-300 dark:border-yellow-700">
+                                <p class="text-xs text-yellow-800 dark:text-yellow-300">
+                                    <strong>💡 Dato clave:</strong> Según estudios de 2025, profesionales que dominan herramientas de IA ganan en promedio 25-40% más que quienes no las usan. El mercado de servicios de IA para no-técnicos crece 150% anual.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Week Content -->
+            <div id="week-content" class="hidden max-w-4xl mx-auto space-y-6">
+                <!-- Week Header -->
+                <div class="bg-secondary p-6 rounded-xl card-shadow border-l-4 border-amber-500">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide" id="week-label">SEMANA 1</span>
+                            <h2 class="text-2xl font-bold text-primary mt-1" id="week-title">Título</h2>
+                            <p class="text-secondary mt-2" id="week-desc">Descripción</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openQuiz()" id="quiz-btn" class="hidden px-4 py-2 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-lg text-sm font-medium hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors">
+                                🧠 Quiz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Resources Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                    <!-- Video & Reading List -->
+                    <div class="bg-secondary p-6 rounded-xl card-shadow h-full">
+                        <h3 class="font-bold text-primary mb-4 flex items-center gap-2">
+                            <span class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 p-1 rounded text-xs">VER</span>
+                            Material de Estudio
+                        </h3>
+                        <div id="resource-list" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Homework/Lab -->
+                    <div class="bg-secondary p-6 rounded-xl card-shadow h-full flex flex-col">
+                        <h3 class="font-bold text-primary mb-4 flex items-center gap-2">
+                            <span class="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 p-1 rounded text-xs">HACER</span>
+                            Manos a la Obra
+                        </h3>
+                        <div id="homework-list" class="space-y-3 flex-1"></div>
+                        <div class="mt-4 pt-4 border-t border-theme">
+                            <div id="week-progress-bar" class="w-full bg-tertiary rounded-full h-2">
+                                <div id="week-progress-fill" class="bg-green-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-muted mt-2 text-center" id="week-progress-text">0 de 0 tareas completadas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="bg-secondary p-6 rounded-xl card-shadow">
+                    <h3 class="font-bold text-primary mb-4 flex items-center gap-2">
+                        <span class="bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 p-1 rounded text-xs">📝</span>
+                        Mis Notas
+                    </h3>
+                    <textarea id="week-notes"
+                        class="w-full h-32 p-3 bg-tertiary border border-theme rounded-lg text-secondary resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        placeholder="Escribe tus apuntes de esta semana aquí... Se guardan automáticamente."
+                        oninput="saveNotes()"></textarea>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between items-center pt-4">
+                    <button onclick="prevWeek()" id="prev-week-btn" class="px-4 py-2 bg-tertiary hover:bg-amber-100 dark:hover:bg-amber-900 text-secondary rounded-lg transition-colors">
+                        ← Semana Anterior
+                    </button>
+                    <button onclick="nextWeek()" id="next-week-btn" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors">
+                        Siguiente Semana →
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar: Tools Comparison -->
+        <aside class="w-80 bg-secondary border-l border-theme overflow-y-auto hidden xl:block shrink-0 p-6">
+            <div class="mb-8">
+                <h3 class="font-bold text-primary mb-2">Comparativa de Herramientas</h3>
+                <p class="text-xs text-muted mb-4">¿Cuál debo usar hoy?</p>
+                <div class="chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-2 justify-center">
+                    <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full">ChatGPT: Todo terreno</span>
+                    <span class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">Gemini: Google</span>
+                    <span class="text-xs px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 rounded-full">Claude: Escritura</span>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 dark:bg-amber-900/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 class="font-bold text-amber-800 dark:text-amber-300 text-sm mb-2">💡 Consejo Pro</h4>
+                <p id="pro-tip" class="text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
+                    Selecciona una semana para ver el consejo específico.
+                </p>
+            </div>
+
+            <!-- Mini Badges Preview -->
+            <div class="mt-6 pt-4 border-t border-theme">
+                <h4 class="font-bold text-primary text-sm mb-3">Tus Logros</h4>
+                <div id="badges-preview" class="flex flex-wrap gap-2"></div>
+                <button onclick="openBadges()" class="mt-3 text-xs text-amber-600 hover:text-amber-700 dark:text-amber-400">Ver todos →</button>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Library Modal -->
+    <div id="library-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="bg-secondary rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-theme flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-primary">📚 Biblioteca de Recursos</h2>
+                    <p class="text-sm text-muted">+100 cursos curados en español</p>
+                </div>
+                <button onclick="closeLibrary()" class="text-2xl text-muted hover:text-primary">✕</button>
+            </div>
+
+            <!-- Filters -->
+            <div class="p-4 border-b border-theme bg-tertiary">
+                <div class="flex flex-wrap gap-3">
+                    <select id="filter-tool" onchange="filterLibrary()" class="px-3 py-2 bg-secondary border border-theme rounded-lg text-sm text-secondary">
+                        <option value="">Todas las herramientas</option>
+                        <option value="chatgpt">ChatGPT</option>
+                        <option value="claude">Claude</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="copilot">Copilot</option>
+                        <option value="canva">Canva</option>
+                        <option value="excel">Excel + IA</option>
+                        <option value="general">General</option>
+                    </select>
+                    <select id="filter-price" onchange="filterLibrary()" class="px-3 py-2 bg-secondary border border-theme rounded-lg text-sm text-secondary">
+                        <option value="">Todos los precios</option>
+                        <option value="free">🆓 Gratis</option>
+                        <option value="paid">💰 De pago</option>
+                        <option value="cert">🎓 Con certificado</option>
+                    </select>
+                    <select id="filter-platform" onchange="filterLibrary()" class="px-3 py-2 bg-secondary border border-theme rounded-lg text-sm text-secondary">
+                        <option value="">Todas las plataformas</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="coursera">Coursera</option>
+                        <option value="udemy">Udemy</option>
+                        <option value="domestika">Domestika</option>
+                        <option value="google">Google</option>
+                        <option value="microsoft">Microsoft</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Resources List -->
+            <div id="library-list" class="flex-1 overflow-y-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+    </div>
+
+    <!-- Badges Modal -->
+    <div id="badges-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="bg-secondary rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            <div class="p-6 border-b border-theme flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-primary">🏆 Tus Logros</h2>
+                    <p class="text-sm text-muted" id="badges-count">0 de 10 desbloqueados</p>
+                </div>
+                <button onclick="closeBadges()" class="text-2xl text-muted hover:text-primary">✕</button>
+            </div>
+            <div id="badges-list" class="p-6 grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-y-auto max-h-[60vh]"></div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="bg-secondary rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-theme flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-primary">🧠 Quiz de la Semana</h2>
+                    <p class="text-sm text-muted" id="quiz-progress">Pregunta 1 de 5</p>
+                </div>
+                <button onclick="closeQuiz()" class="text-2xl text-muted hover:text-primary">✕</button>
+            </div>
+            <div id="quiz-content" class="flex-1 overflow-y-auto p-6"></div>
+            <div id="quiz-result" class="hidden p-6 text-center">
+                <div class="text-6xl mb-4" id="quiz-result-icon">🎉</div>
+                <h3 class="text-2xl font-bold text-primary mb-2" id="quiz-result-title">¡Excelente!</h3>
+                <p class="text-secondary mb-4" id="quiz-result-text">Obtuviste 5/5 respuestas correctas</p>
+                <button onclick="closeQuiz()" class="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA ====================
+
+        const curriculum = [
+            {
+                id: 1,
+                title: "Desmitificando la IA",
+                desc: "Entiende qué es la IA, pierde el miedo y crea tus primeras cuentas. No se requiere experiencia previa.",
+                tip: "No necesitas ser programador. Hablar con una IA es como chatear con un pasante muy leído pero que necesita instrucciones claras.",
+                resources: [
+                    { type: "Curso", title: "Curso gratis: IA para todos (actualizado 2026)", url: "https://www.youtube.com/watch?v=DjshEwI6pVk", time: "3+ horas", platform: "YouTube", free: true },
+                    { type: "Curso", title: "Fundamentos del uso de IA generativa — U. Andes", url: "https://www.coursera.org/learn/fundamentos-del-uso-de-ia-generativa", time: "10 horas", platform: "Coursera", free: true },
+                    { type: "Tutorial", title: "Elementos de IA — Universidad Helsinki", url: "https://www.elementsofai.com/", time: "30-40 horas", platform: "elementsofai.com", free: true }
+                ],
+                tasks: [
+                    "Crear una cuenta gratuita en OpenAI (ChatGPT).",
+                    "Escribir tu primer 'Hola mundo' a la IA y preguntarle qué puede hacer por ti.",
+                    "Crear cuenta en Claude.ai",
+                    "Instalar la app de ChatGPT en tu celular."
+                ]
+            },
+            {
+                id: 2,
+                title: "El Arte de Preguntar (Prompting I)",
+                desc: "Aprende a escribir 'Prompts' (instrucciones) básicos. La calidad de tu respuesta depende de tu pregunta.",
+                tip: "Usa la regla de los 3 pasos: Rol (Actúa como...), Tarea (Escribe un...), Contexto (Para una persona que...).",
+                resources: [
+                    { type: "Curso", title: "Curso Completo de ChatGPT 2025: Principiante a Experto", url: "https://www.youtube.com/watch?v=FMBdhZf8u_Y", time: "2+ horas", platform: "YouTube", free: true },
+                    { type: "Guía", title: "Guía de Ingeniería de Prompt", url: "https://www.promptingguide.ai/es", time: "Referencia", platform: "promptingguide.ai", free: true },
+                    { type: "Curso", title: "Prompt Engineering Foundation en español (CertiProf)", url: "https://www.udemy.com/course/prompt-engineering-foundation-spanish/", time: "7 horas", platform: "Udemy", free: false, price: "~$15" }
+                ],
+                tasks: [
+                    "Pide a ChatGPT que te explique un tema complejo 'como si tuvieras 10 años'.",
+                    "Pide una receta de cocina con los ingredientes que tienes en tu nevera.",
+                    "Pide que corrija la ortografía y mejore un mensaje de texto.",
+                    "Practica dándole un ROL específico (ej: 'Actúa como un chef italiano')."
+                ]
+            },
+            {
+                id: 3,
+                title: "Gemini y el Ecosistema Google",
+                desc: "Explora Google Gemini y cómo se conecta con información en tiempo real y tus documentos.",
+                tip: "Gemini brilla cuando necesitas información actual de internet, ya que está conectado a Google en tiempo real.",
+                resources: [
+                    { type: "Curso", title: "Domina la IA con Gemini (OFICIAL Google)", url: "https://skillshop.exceedlms.com/student/path/1282-domina-la-ia-con-gemini", time: "1 hora", platform: "Google Skillshop", free: true },
+                    { type: "Curso", title: "Inmersión IA con Google Gemini", url: "https://www.alura.com.br/cursos-online-inteligencia-artificial/gemini", time: "Intensivo", platform: "Alura Latam", free: true },
+                    { type: "Video", title: "Google Gemini paso a paso", url: "https://www.youtube.com/results?search_query=tutorial+google+gemini+español+2024", time: "Variable", platform: "YouTube", free: true }
+                ],
+                tasks: [
+                    "Crear cuenta o acceder a Gemini con tu Google ID.",
+                    "Planificar unas vacaciones ficticias pidiendo precios actuales de vuelos.",
+                    "Pedirle que resuma una noticia reciente (de esta semana).",
+                    "Probar la integración con Google Docs (Help me write)."
+                ]
+            },
+            {
+                id: 4,
+                title: "Claude: El Analista Literario",
+                desc: "Descubre Claude AI (Anthropic), conocido por su tono más humano y capacidad de leer textos largos.",
+                tip: "Claude es excelente para escritura creativa y matices. Puede leer documentos de hasta 200K tokens (~150,000 palabras).",
+                resources: [
+                    { type: "Video", title: "Primeros Pasos con Claude AI y Análisis de Archivos", url: "https://www.youtube.com/watch?v=G7iPM9oWhZE", time: "15 min", platform: "YouTube", free: true },
+                    { type: "Docs", title: "Documentación Oficial Claude", url: "https://docs.anthropic.com/", time: "Referencia", platform: "Anthropic", free: true },
+                    { type: "Curso", title: "Claude AI de Anthropic: Asistente IA + Modelo LLM", url: "https://www.udemy.com/course/claude-ai-anthropic/", time: "Variable", platform: "Udemy", free: false, price: "~$15" }
+                ],
+                tasks: [
+                    "Subir un PDF largo (manual, contrato, artículo) y pedir un resumen de 5 puntos.",
+                    "Pedirle que escriba un correo formal de agradecimiento.",
+                    "Comparar el tono de escritura de Claude vs ChatGPT con el mismo prompt.",
+                    "Probar el modo 'Projects' para organizar conversaciones."
+                ]
+            },
+            {
+                id: 5,
+                title: "Productividad de Oficina",
+                desc: "Usa la IA para redactar correos, resumir actas y organizar tu agenda. Tu asistente virtual gratuito.",
+                tip: "Nunca copies y pegues información confidencial o privada del trabajo. Usa datos genéricos o ficticios.",
+                resources: [
+                    { type: "Video", title: "ChatGPT para Excel y Correos", url: "https://www.youtube.com/results?search_query=chatgpt+productividad+oficina+excel+correos", time: "15 min", platform: "YouTube", free: true },
+                    { type: "Curso", title: "Copilot: Fundamentos de IA de Microsoft", url: "https://www.santanderopenacademy.com/es/courses/copilot-fundamentos-ia-microsoft.html", time: "8 horas", platform: "Santander Open Academy", free: true },
+                    { type: "Curso", title: "Crear indicaciones eficaces para M365 Copilot", url: "https://learn.microsoft.com/es-es/training/modules/create-effective-prompts-copilot/", time: "Variable", platform: "Microsoft Learn", free: true }
+                ],
+                tasks: [
+                    "Generar una plantilla de correo para reclamar un servicio.",
+                    "Crear una estructura de Excel pidiéndole la fórmulas a la IA.",
+                    "Organizar una lista desordenada de tareas por prioridad.",
+                    "Resumir una reunión ficticia en formato de minuta."
+                ]
+            },
+            {
+                id: 6,
+                title: "Aprendizaje Acelerado",
+                desc: "Convierte a la IA en tu tutor personal de idiomas, historia, matemáticas o cualquier tema.",
+                tip: "Pide a la IA que te haga un quiz (examen corto) sobre lo que acabas de leer para reforzar tu memoria.",
+                resources: [
+                    { type: "Video", title: "Cómo usar la VOZ AVANZADA de ChatGPT", url: "https://www.youtube.com/watch?v=bzpmMftqXHI", time: "10 min", platform: "YouTube", free: true },
+                    { type: "Video", title: "Aprender idiomas con ChatGPT", url: "https://www.youtube.com/watch?v=WTca_T9mHHs", time: "12 min", platform: "YouTube", free: true },
+                    { type: "Curso", title: "IA Para Todos — Andrew Ng / DeepLearning.AI", url: "https://www.coursera.org/learn/ai-for-everyone-es", time: "12 horas", platform: "Coursera", free: true }
+                ],
+                tasks: [
+                    "Simular una conversación básica en inglés con ChatGPT (texto o voz).",
+                    "Pedirle que te explique un evento histórico y luego te haga 3 preguntas de prueba.",
+                    "Usar la técnica Feynman: explicar un concepto y pedir correcciones.",
+                    "Crear flashcards de vocabulario para cualquier tema."
+                ]
+            },
+            {
+                id: 7,
+                title: "Ética y Alucinaciones",
+                desc: "Entender los peligros: la IA miente (alucina). Cómo verificar datos y usarla responsablemente.",
+                tip: "Si la IA te da un dato médico, legal o financiero, SIEMPRE verifícalo en la fuente original. La IA inventa cosas convincentes.",
+                resources: [
+                    { type: "Video", title: "Qué son las Alucinaciones de la IA y por qué ocurren", url: "https://www.youtube.com/watch?v=TX1Hen-ZS-g", time: "10 min", platform: "YouTube", free: true },
+                    { type: "Curso", title: "IA: Ética en la IA Educativa (UNAM)", url: "https://www.coursera.org/learn/ia-etica", time: "Variable", platform: "Coursera", free: true },
+                    { type: "Curso", title: "Introduction to Responsible AI — Español", url: "https://www.coursera.org/learn/introduction-to-responsible-ai-es", time: "Variable", platform: "Google Cloud", free: true },
+                    { type: "Artículo", title: "Cómo proteger tu privacidad en ChatGPT", url: "https://autointellia.com/como-proteger-tu-privacidad-en-chatgpt/", time: "5 min", platform: "Autointellia", free: true }
+                ],
+                tasks: [
+                    "Preguntar algo muy específico sobre tu biografía (probablemente invente).",
+                    "Buscar un dato histórico falso que la IA podría corregir o caer en la trampa.",
+                    "Configurar la privacidad en ChatGPT (desactivar entrenamiento con tus datos).",
+                    "Pedir fuentes de una afirmación y verificar si existen."
+                ]
+            },
+            {
+                id: 8,
+                title: "Excel y Análisis de Datos con IA",
+                desc: "Aprende a usar IA para crear fórmulas, analizar datos y generar gráficos sin ser experto en Excel.",
+                tip: "Sube tu archivo de Excel a ChatGPT y pídele que analice los datos por ti. ¡Puede crear gráficos automáticamente!",
+                resources: [
+                    { type: "Video", title: "Cómo Usar Excel con ChatGPT", url: "https://www.youtube.com/watch?v=QVLJ7WZnTJg", time: "20 min", platform: "YouTube", free: true },
+                    { type: "Curso", title: "Complete Course: ChatGPT Applied to Excel", url: "https://www.youtube.com/watch?v=85yRpFpOxek", time: "Completo", platform: "YouTube", free: true },
+                    { type: "Herramienta", title: "Julius AI — Analiza Excel/CSV con lenguaje natural", url: "https://julius.ai/", time: "Herramienta", platform: "julius.ai", free: true },
+                    { type: "Curso", title: "Cursos Excel + ChatGPT + IA en español", url: "https://www.udemy.com/courses/search/?q=excel+chatgpt+español", time: "Variable", platform: "Udemy", free: false, price: "~$12-15" }
+                ],
+                tasks: [
+                    "Subir una tabla simple de gastos a ChatGPT y pedir análisis.",
+                    "Pedir a la IA que genere una fórmula compleja (BUSCARV, SUMAR.SI).",
+                    "Crear un gráfico de barras a partir de datos usando solo lenguaje natural.",
+                    "Probar Julius.ai con un archivo CSV propio."
+                ]
+            },
+            {
+                id: 9,
+                title: "Canva y Diseño con IA",
+                desc: "Crea diseños profesionales sin ser diseñador usando Canva y su suite de herramientas mágicas de IA.",
+                tip: "Canva puede generar presentaciones completas con solo escribir el tema. Usa 'Diseño Mágico' para empezar rápido.",
+                resources: [
+                    { type: "Video", title: "La IA de Canva es IMPRESIONANTE: Magic Studio", url: "https://www.youtube.com/watch?v=f5NREtAEz-s", time: "15 min", platform: "YouTube", free: true },
+                    { type: "Video", title: "Canva Estudio Mágico — Presentaciones con IA", url: "https://www.youtube.com/results?search_query=canva+estudio+magico+presentaciones+ia", time: "Variable", platform: "YouTube", free: true },
+                    { type: "Curso", title: "Canva de 0 a 100 — Clàudia Cánovas", url: "https://www.domestika.org/en/courses/4855-canva-for-beginners-create-professional-designs", time: "Variable", platform: "Domestika", free: false, price: "~$10-12" },
+                    { type: "Docs", title: "Diseño Mágico™ — Documentación oficial Canva", url: "https://www.canva.com/es_mx/diseno-magico/", time: "Referencia", platform: "Canva", free: true }
+                ],
+                tasks: [
+                    "Crear una cuenta en Canva (si no tienes).",
+                    "Generar una presentación completa usando solo 'Diseño Mágico' y un título.",
+                    "Usar 'Borrador Mágico' para eliminar elementos de una foto.",
+                    "Crear un post de Instagram usando plantillas y IA para el texto."
+                ]
+            },
+            {
+                id: 10,
+                title: "Mejora tu CV y Perfil Profesional",
+                desc: "Usa IA para reescribir tu currículum, optimizar tu LinkedIn y prepararte para entrevistas.",
+                tip: "Pega la descripción del puesto al que aplicas y pide que adapte tu CV a esos requisitos específicos.",
+                resources: [
+                    { type: "Video", title: "Cómo mejorar tu CV con Inteligencia Artificial", url: "https://www.youtube.com/watch?v=X_6rjUOjJ9M", time: "15 min", platform: "YouTube", free: true },
+                    { type: "Curso", title: "ChatGPT para los negocios: De Cero a Experto", url: "https://www.udemy.com/courses/search/?q=chatgpt+negocios+español", time: "Variable", platform: "Udemy", free: true },
+                    { type: "Curso", title: "Mejora tu negocio con IA — U. Anáhuac", url: "https://www.coursera.org/learn/mejora-tu-negocio-con-inteligencia-artificial", time: "Variable", platform: "Coursera", free: true }
+                ],
+                tasks: [
+                    "Pedir a la IA que reescriba tu 'Resumen Profesional' de manera más impactante.",
+                    "Generar 5 bullets de logros cuantificables para tu CV.",
+                    "Simular una entrevista de trabajo con ChatGPT (modo rol).",
+                    "Optimizar el 'Acerca de' de tu LinkedIn con ayuda de IA."
+                ]
+            },
+            {
+                id: 11,
+                title: "Marketing, Freelancing y Monetización con IA",
+                desc: "Aprende a crear contenido profesional, ofrecer servicios freelance y generar ingresos reales usando IA como tu herramienta principal.",
+                tip: "💰 Los servicios de IA más demandados: redacción de contenido ($50-500/artículo), gestión de redes ($300-1500/mes), y consultoría de prompts ($50-200/hora).",
+                resources: [
+                    { type: "Curso", title: "ChatGPT 5: Marketing y Branding con IA (Best Seller)", url: "https://www.udemy.com/course/chatgpt-marketing-branding-ia/", time: "Variable", platform: "Udemy", free: false, price: "~$15" },
+                    { type: "Video", title: "Cómo ganar dinero con ChatGPT en 2025", url: "https://www.youtube.com/results?search_query=ganar+dinero+chatgpt+freelance+2025", time: "Variable", platform: "YouTube", free: true },
+                    { type: "Curso", title: "Creación de contenido con IA — Núria Mañé", url: "https://www.domestika.org/en/courses/5333-content-creation-with-ai", time: "Variable", platform: "Domestika", free: false, price: "~$10" },
+                    { type: "Plataforma", title: "Fiverr — Ofrece servicios de IA", url: "https://www.fiverr.com/", time: "Plataforma", platform: "Fiverr", free: true },
+                    { type: "Plataforma", title: "Upwork — Trabajos remotos con IA", url: "https://www.upwork.com/", time: "Plataforma", platform: "Upwork", free: true }
+                ],
+                tasks: [
+                    "Crear un perfil en Fiverr o Upwork ofreciendo un servicio con IA (ej: redacción, diseño, análisis).",
+                    "Generar un portafolio de 3 ejemplos de trabajo usando las herramientas aprendidas.",
+                    "Crear un plan de contenidos de 7 días para una marca ficticia (muestra para clientes).",
+                    "Escribir 3 propuestas de servicios diferentes que podrías ofrecer con IA.",
+                    "Investigar con Gemini cuánto cobran otros freelancers por servicios similares."
+                ]
+            },
+            {
+                id: 12,
+                title: "Proyecto Final: Lanzamiento de una Idea",
+                desc: "Integra todas las herramientas aprendidas para conceptualizar y planear el lanzamiento de un proyecto personal.",
+                tip: "El experto no usa una sola herramienta, usa la caja de herramientas completa. Gemini para buscar, Claude para escribir, ChatGPT para razonar, Canva para diseñar.",
+                resources: [
+                    { type: "Curso", title: "Curso gratis: Aprende ChatGPT y cambia tu forma de trabajar", url: "https://www.youtube.com/watch?v=AjWCPTHMXgk", time: "2+ horas", platform: "YouTube", free: true },
+                    { type: "Curso", title: "Automatización con IA en Make", url: "https://www.udemy.com/courses/search/?q=make+automatizacion+ia", time: "Variable", platform: "Udemy", free: true },
+                    { type: "Herramienta", title: "Gamma.app — Presentaciones con IA", url: "https://gamma.app/", time: "Herramienta", platform: "Gamma", free: true }
+                ],
+                tasks: [
+                    "Definir tu idea de proyecto/emprendimiento con ayuda de ChatGPT (lluvia de ideas).",
+                    "Investigar el mercado actual usando Gemini (conectado a internet).",
+                    "Redactar un mini plan de negocios de 1 página con Claude.",
+                    "Crear la identidad visual (logo/colores) con Copilot Designer o Canva.",
+                    "Diseñar una presentación pitch usando Gamma.app o Canva.",
+                    "¡Celebrar tu graduación! 🎓"
+                ]
+            }
+        ];
+
+        const quizzes = {
+            1: [
+                { question: "¿Qué significa 'prompt' en el contexto de IA?", options: ["Un programa de computadora", "Una instrucción o texto que le das a la IA", "Una base de datos", "El nombre de un modelo de IA"], correct: 1, explanation: "El prompt es el texto que escribes para comunicarte con la IA y obtener una respuesta." },
+                { question: "¿Cuál de estas NO es una IA generativa?", options: ["ChatGPT", "Claude", "Excel", "Gemini"], correct: 2, explanation: "Excel es una hoja de cálculo tradicional. Las otras son IAs generativas que crean contenido." },
+                { question: "¿Por qué es importante la calidad de tu prompt?", options: ["No importa, la IA siempre da buenas respuestas", "Porque la calidad de la respuesta depende de tu instrucción", "Porque la IA cobra más por prompts malos", "Porque los prompts largos no funcionan"], correct: 1, explanation: "La regla de oro: basura entra, basura sale. Mejores instrucciones = mejores respuestas." },
+                { question: "¿Qué necesitas para usar ChatGPT?", options: ["Saber programar", "Una cuenta gratuita", "Pagar suscripción obligatoria", "Instalar software especial"], correct: 1, explanation: "ChatGPT tiene una versión gratuita. Solo necesitas crear una cuenta." }
+            ],
+            2: [
+                { question: "¿Cuáles son los 3 elementos clave de un buen prompt?", options: ["Título, cuerpo, firma", "Rol, Tarea, Contexto", "Pregunta, respuesta, verificación", "Input, proceso, output"], correct: 1, explanation: "La fórmula Rol-Tarea-Contexto te ayuda a estructurar instrucciones claras." },
+                { question: "'Actúa como un chef italiano' es un ejemplo de:", options: ["Tarea", "Contexto", "Rol", "Formato"], correct: 2, explanation: "Definir un ROL activa el vocabulario y tono específico de ese personaje." },
+                { question: "¿Qué técnica mejora las respuestas de la IA?", options: ["Escribir en mayúsculas", "Ser vago para dar libertad", "Iterar y refinar la respuesta", "Usar solo preguntas de sí/no"], correct: 2, explanation: "La iteración (refinar) es clave. Rara vez el primer resultado es perfecto." },
+                { question: "Si quieres una respuesta en formato tabla, debes:", options: ["Esperar que la IA lo adivine", "Especificarlo en el prompt", "Usar otro programa", "No es posible"], correct: 1, explanation: "Especificar el formato deseado (tabla, lista, párrafo) mejora mucho los resultados." }
+            ],
+            3: [
+                { question: "¿Cuál es la ventaja principal de Gemini sobre ChatGPT?", options: ["Es más barato", "Está conectado a Google en tiempo real", "Tiene mejor diseño", "Solo funciona en español"], correct: 1, explanation: "Gemini puede buscar información actualizada en internet, mientras ChatGPT tiene fecha de corte." },
+                { question: "¿Con qué cuenta accedes a Gemini?", options: ["Cuenta de OpenAI", "Cuenta de Google", "Cuenta de Microsoft", "No requiere cuenta"], correct: 1, explanation: "Gemini usa tu cuenta de Google, lo que también permite integración con Docs, Drive, etc." },
+                { question: "¿Para qué tarea es MEJOR usar Gemini?", options: ["Escribir poesía", "Buscar noticias de hoy", "Analizar PDFs largos", "Crear imágenes"], correct: 1, explanation: "Gemini brilla con información actual gracias a su conexión con el buscador de Google." },
+                { question: "¿Qué significa 'Help me write' en Google Docs?", options: ["Ayuda técnica de Google", "Función de IA para escribir", "Corrector ortográfico", "Traductor"], correct: 1, explanation: "Es la función de IA generativa integrada en Google Docs para ayudarte a redactar." }
+            ],
+            4: [
+                { question: "¿Qué empresa creó Claude?", options: ["OpenAI", "Google", "Anthropic", "Microsoft"], correct: 2, explanation: "Claude es desarrollado por Anthropic, fundada por ex-empleados de OpenAI." },
+                { question: "¿Cuál es la fortaleza principal de Claude?", options: ["Generación de imágenes", "Análisis de documentos largos y escritura natural", "Búsqueda en internet", "Edición de video"], correct: 1, explanation: "Claude tiene una ventana de contexto enorme (~200K tokens) ideal para documentos largos." },
+                { question: "¿Qué significa 'ventana de contexto'?", options: ["El tamaño de la pantalla", "Cuánto texto puede 'recordar' la IA en una conversación", "El tiempo de respuesta", "El precio del servicio"], correct: 1, explanation: "La ventana de contexto es la 'memoria a corto plazo' de la IA durante la conversación." },
+                { question: "¿Para qué tarea elegirías Claude sobre ChatGPT?", options: ["Generar imágenes", "Resumir un libro completo", "Buscar noticias actuales", "Hacer cálculos matemáticos"], correct: 1, explanation: "Claude puede leer documentos muy largos de una vez, ideal para libros o contratos." }
+            ],
+            5: [
+                { question: "¿Qué tipo de información NUNCA debes compartir con IA gratuita?", options: ["Recetas de cocina", "Datos confidenciales del trabajo", "Preguntas de cultura general", "Ideas para regalos"], correct: 1, explanation: "Las versiones gratuitas pueden usar tus datos para entrenar. Nunca compartas información sensible." },
+                { question: "¿Qué es Microsoft Copilot?", options: ["Un juego de Microsoft", "IA integrada en Office 365", "Un navegador web", "Una red social"], correct: 1, explanation: "Copilot integra la potencia de GPT-4 en Word, Excel, PowerPoint y otras apps de Microsoft." },
+                { question: "Para crear una fórmula de Excel con IA, debes:", options: ["Saber programar VBA", "Describir lo que quieres en lenguaje natural", "Comprar software adicional", "Usar solo Copilot de pago"], correct: 1, explanation: "Puedes describir la fórmula que necesitas y la IA la genera por ti." },
+                { question: "¿Cuál es una buena práctica al usar IA para correos de trabajo?", options: ["Copiar y pegar nombres reales de clientes", "Usar datos genéricos o ficticios", "Compartir números de cuenta", "Adjuntar documentos confidenciales"], correct: 1, explanation: "Siempre usa datos genéricos para proteger la privacidad de clientes y colegas." }
+            ],
+            6: [
+                { question: "¿Qué es la 'Técnica Feynman'?", options: ["Un tipo de IA", "Explicar algo de forma simple para aprender mejor", "Una fórmula matemática", "Un método de meditación"], correct: 1, explanation: "Consiste en explicar un tema como si fuera para un niño. Si no puedes, no lo entiendes bien." },
+                { question: "¿Cómo puede la IA ayudarte a aprender idiomas?", options: ["Solo traduce textos", "Puede simular conversaciones y corregir errores", "Solo funciona con inglés", "Requiere profesor humano siempre"], correct: 1, explanation: "Las IAs pueden mantener conversaciones, corregir gramática y adaptar el nivel a tu progreso." },
+                { question: "¿Qué ventaja tiene el modo de voz de ChatGPT?", options: ["Es más caro", "Permite practicar pronunciación y conversación natural", "Solo funciona en inglés", "Requiere internet especial"], correct: 1, explanation: "El modo de voz permite practicar speaking sin la presión de hablar con otra persona." },
+                { question: "Pedir a la IA que te haga un quiz después de estudiar sirve para:", options: ["Perder tiempo", "Reforzar la memoria y verificar comprensión", "Hacer trampa", "Nada útil"], correct: 1, explanation: "Los quizzes activan la memoria activa y ayudan a identificar qué no entendiste bien." }
+            ],
+            7: [
+                { question: "¿Qué es una 'alucinación' en el contexto de IA?", options: ["Un error visual", "Cuando la IA genera información falsa con confianza", "Un tipo de modelo", "Un virus informático"], correct: 1, explanation: "Las alucinaciones son respuestas inventadas que la IA presenta como hechos verdaderos." },
+                { question: "¿Por qué la IA 'alucina'?", options: ["Está rota", "Predice palabras basándose en probabilidades, no en conocimiento real", "Quiere engañarte", "Solo pasa con IAs baratas"], correct: 1, explanation: "La IA no 'sabe' hechos; predice la siguiente palabra más probable, lo que a veces genera errores." },
+                { question: "Si la IA te da información médica, debes:", options: ["Seguirla inmediatamente", "Verificarla con un profesional de salud", "Compartirla en redes sociales", "Ignorar a tu médico"], correct: 1, explanation: "SIEMPRE verifica información médica, legal o financiera con profesionales." },
+                { question: "¿Cómo puedes reducir el riesgo de alucinaciones?", options: ["Confiar ciegamente", "Pedir fuentes y verificarlas", "Usar solo prompts cortos", "No se puede reducir"], correct: 1, explanation: "Pedir fuentes y luego verificar que existan reduce significativamente el riesgo." }
+            ],
+            8: [
+                { question: "¿Puedes subir archivos de Excel a ChatGPT?", options: ["No, solo texto", "Sí, y puede analizarlos", "Solo con versión de pago", "Solo archivos pequeños"], correct: 1, explanation: "ChatGPT puede recibir archivos Excel y analizarlos, crear gráficos y más." },
+                { question: "¿Qué es Julius.ai?", options: ["Un modelo de lenguaje", "Una herramienta para analizar datos con lenguaje natural", "Un juego", "Una red social"], correct: 1, explanation: "Julius.ai permite analizar archivos de datos usando solo lenguaje natural, sin código." },
+                { question: "Para crear una fórmula BUSCARV con IA, debes:", options: ["Saber la sintaxis exacta", "Describir qué datos quieres buscar y dónde", "Programar en Python", "Usar solo Copilot"], correct: 1, explanation: "Solo describe lo que necesitas: 'buscar el precio del producto X en la tabla de precios'." },
+                { question: "¿Qué puede hacer la IA con tus datos de Excel?", options: ["Solo leerlos", "Analizarlos, crear gráficos, detectar patrones, generar fórmulas", "Nada útil", "Solo traducirlos"], correct: 1, explanation: "La IA puede hacer análisis completos: tendencias, gráficos, resúmenes, fórmulas y más." }
+            ],
+            9: [
+                { question: "¿Qué es 'Diseño Mágico' de Canva?", options: ["Una plantilla específica", "Función de IA que genera diseños completos desde texto", "Un curso de diseño", "Una fuente tipográfica"], correct: 1, explanation: "Diseño Mágico genera presentaciones, posts y más con solo escribir el tema." },
+                { question: "¿Qué puede hacer el 'Borrador Mágico' de Canva?", options: ["Dibujar mejor", "Eliminar elementos no deseados de fotos", "Crear logos", "Traducir textos"], correct: 1, explanation: "Borrador Mágico usa IA para eliminar objetos o personas de las fotos." },
+                { question: "¿Canva requiere conocimientos de diseño?", options: ["Sí, es para profesionales", "No, está diseñado para no-diseñadores", "Solo para logos", "Sí, necesitas Photoshop primero"], correct: 1, explanation: "Canva está específicamente diseñado para que cualquier persona cree diseños profesionales." },
+                { question: "¿Cuál es una buena práctica al usar plantillas de Canva?", options: ["Usarlas sin modificar", "Personalizarlas con tu marca y contenido", "Nunca usar plantillas", "Solo usar plantillas de pago"], correct: 1, explanation: "Las plantillas son punto de partida; personalízalas para que reflejen tu marca." }
+            ],
+            10: [
+                { question: "¿Cómo puede la IA ayudar con tu CV?", options: ["Solo lo traduce", "Puede reescribirlo, mejorarlo y adaptarlo a ofertas específicas", "Solo cuenta palabras", "No puede ayudar con CVs"], correct: 1, explanation: "La IA puede optimizar tu CV, cuantificar logros y adaptarlo a cada oferta de trabajo." },
+                { question: "¿Qué debes darle a la IA para adaptar tu CV a una oferta?", options: ["Solo tu nombre", "Tu CV actual y la descripción del puesto", "Solo la descripción del puesto", "Tu fecha de nacimiento"], correct: 1, explanation: "Con ambos documentos, la IA puede identificar keywords y adaptar tu experiencia." },
+                { question: "¿Para qué sirve simular una entrevista con ChatGPT?", options: ["Para perder tiempo", "Para practicar respuestas y ganar confianza", "No sirve para nada", "Solo para entrevistas en inglés"], correct: 1, explanation: "Simular entrevistas te ayuda a preparar respuestas y reducir nervios." },
+                { question: "¿Qué sección de LinkedIn puede optimizar la IA?", options: ["Solo la foto", "El 'Acerca de', experiencia, habilidades y más", "Nada", "Solo los contactos"], correct: 1, explanation: "La IA puede mejorar prácticamente todas las secciones de texto de tu perfil." }
+            ],
+            11: [
+                { question: "¿Cuál es una plataforma popular para ofrecer servicios freelance con IA?", options: ["Netflix", "Fiverr o Upwork", "Instagram", "WhatsApp"], correct: 1, explanation: "Fiverr, Upwork y Workana son las principales plataformas donde puedes ofrecer servicios potenciados por IA." },
+                { question: "¿Cuánto puede cobrar un freelancer por redacción de contenido con IA?", options: ["Solo $1 por artículo", "$50-500 por artículo dependiendo de la complejidad", "Nada, es gratis", "$10,000 mínimo"], correct: 1, explanation: "Los precios varían según complejidad, extensión y nicho. Artículos de blog pueden ir de $50 a $500." },
+                { question: "¿Qué servicio es MÁS demandado para freelancers con IA en 2025?", options: ["Programación avanzada", "Redacción de contenido y copywriting", "Reparación de computadoras", "Contabilidad manual"], correct: 1, explanation: "La redacción de contenido, gestión de redes y consultoría de prompts son los servicios más solicitados." },
+                { question: "¿Qué debes incluir en tu perfil de freelancer para destacar?", options: ["Solo tu nombre", "Portafolio con ejemplos de trabajo hecho con IA", "Tu color favorito", "Nada, los clientes adivinan"], correct: 1, explanation: "Un portafolio con ejemplos reales demuestra tu capacidad y genera confianza en potenciales clientes." },
+                { question: "¿Por qué la IA te da ventaja como freelancer?", options: ["No da ventaja", "Te permite producir más contenido de calidad en menos tiempo", "La IA hace todo automáticamente sin supervisión", "Solo funciona para programadores"], correct: 1, explanation: "La IA te permite ser más productivo: lo que antes tomaba 4 horas ahora puede tomar 1, aumentando tus ingresos." }
+            ],
+            12: [
+                { question: "¿Cuál es la mejor estrategia al usar múltiples IAs?", options: ["Usar solo una", "Usar cada una para lo que es mejor", "Usar la más cara", "No mezclar nunca"], correct: 1, explanation: "Gemini para buscar, Claude para escribir, ChatGPT para razonar, Canva para diseñar." },
+                { question: "¿Qué herramienta usarías para investigar tendencias actuales?", options: ["Claude (sin internet)", "Gemini (conectado a Google)", "Excel", "Canva"], correct: 1, explanation: "Gemini está conectado a internet y puede buscar información en tiempo real." },
+                { question: "¿Qué es Gamma.app?", options: ["Un juego", "Herramienta de IA para crear presentaciones", "Una red social", "Un modelo de lenguaje"], correct: 1, explanation: "Gamma.app genera presentaciones profesionales completas usando solo texto." },
+                { question: "¿Cuál es el paso final recomendado del proyecto?", options: ["Abandonar", "Integrar múltiples herramientas para un resultado completo", "Usar solo ChatGPT", "No hacer presentación"], correct: 1, explanation: "El proyecto final integra todo: investigación, escritura, diseño y presentación." }
+            ]
+        };
+
+        const badges = [
+            { id: "first_step", name: "Primer Paso", icon: "🎯", desc: "Completa tu primera tarea", condition: () => getTotalCompletedTasks() >= 1 },
+            { id: "week_warrior", name: "Guerrero Semanal", icon: "⚔️", desc: "Completa una semana entera", condition: () => getCompletedWeeks() >= 1 },
+            { id: "streak_3", name: "Constante", icon: "🔥", desc: "Mantén una racha de 3 días", condition: () => getStreak() >= 3 },
+            { id: "streak_7", name: "Dedicado", icon: "💪", desc: "Mantén una racha de 7 días", condition: () => getStreak() >= 7 },
+            { id: "explorer", name: "Explorador", icon: "🔍", desc: "Visita todas las semanas", condition: () => getVisitedWeeks() >= 12 },
+            { id: "scholar", name: "Erudito", icon: "📚", desc: "Completa 6 semanas", condition: () => getCompletedWeeks() >= 6 },
+            { id: "quiz_ace", name: "As del Quiz", icon: "🧠", desc: "Obtén 100% en un quiz", condition: () => hasPerfectQuiz() },
+            { id: "note_taker", name: "Apuntador", icon: "📝", desc: "Escribe notas en 5 semanas", condition: () => getWeeksWithNotes() >= 5 },
+            { id: "half_way", name: "Medio Camino", icon: "🏃", desc: "Completa 50% del curso", condition: () => getProgressPercentage() >= 50 },
+            { id: "graduate", name: "Graduado", icon: "🎓", desc: "Completa el curso entero", condition: () => getProgressPercentage() >= 100 }
+        ];
+
+        const resourceLibrary = [
+            // Fundamentos
+            { id: 1, title: "Fundamentos del uso de IA generativa", platform: "Coursera", tool: "general", price: "free", duration: "10 horas", url: "https://www.coursera.org/learn/fundamentos-del-uso-de-ia-generativa", cert: true, rating: 4.7 },
+            { id: 2, title: "IA Para Todos — Andrew Ng", platform: "Coursera", tool: "general", price: "free", duration: "12 horas", url: "https://www.coursera.org/learn/ai-for-everyone-es", cert: true, rating: 4.8 },
+            { id: 3, title: "Elementos de IA — Universidad Helsinki", platform: "elementsofai.com", tool: "general", price: "free", duration: "30-40 horas", url: "https://www.elementsofai.com/", cert: true, rating: 4.9 },
+            { id: 4, title: "Curso gratis: IA para todos (2026)", platform: "YouTube", tool: "general", price: "free", duration: "3+ horas", url: "https://www.youtube.com/watch?v=DjshEwI6pVk", cert: false },
+            { id: 5, title: "Aprende IA generativa desde cero — EDteam", platform: "YouTube", tool: "general", price: "free", duration: "2+ horas", url: "https://www.youtube.com/watch?v=mU08ltWCjpM", cert: false },
+
+            // ChatGPT
+            { id: 10, title: "Curso Completo de ChatGPT 2025", platform: "YouTube", tool: "chatgpt", price: "free", duration: "2+ horas", url: "https://www.youtube.com/watch?v=FMBdhZf8u_Y", cert: false },
+            { id: 11, title: "ChatGPT Guía Completa (+4,748 alumnos)", platform: "Udemy", tool: "chatgpt", price: "paid", priceAmount: 15, duration: "Variable", url: "https://www.udemy.com/course/chatgpt-guia-completa/", cert: true, rating: 4.5 },
+            { id: 12, title: "Inteligencia Artificial & ChatGPT: De Cero a Avanzado", platform: "Udemy", tool: "chatgpt", price: "paid", priceAmount: 15, duration: "18+ horas", url: "https://www.udemy.com/course/chatgpt-cero-avanzado/", cert: true, rating: 4.6 },
+            { id: 13, title: "Cómo usar la VOZ AVANZADA de ChatGPT", platform: "YouTube", tool: "chatgpt", price: "free", duration: "10 min", url: "https://www.youtube.com/watch?v=bzpmMftqXHI", cert: false },
+            { id: 14, title: "ChatGPT desde CERO: Guía para Principiantes", platform: "YouTube", tool: "chatgpt", price: "free", duration: "Variable", url: "https://www.youtube.com/watch?v=_imU9QnfeR8", cert: false },
+
+            // Claude
+            { id: 20, title: "Claude AI de Anthropic: Asistente IA + Modelo LLM", platform: "Udemy", tool: "claude", price: "paid", priceAmount: 15, duration: "Variable", url: "https://www.udemy.com/course/claude-ai-anthropic/", cert: true },
+            { id: 21, title: "Primeros Pasos con Claude AI", platform: "YouTube", tool: "claude", price: "free", duration: "15 min", url: "https://www.youtube.com/watch?v=G7iPM9oWhZE", cert: false },
+            { id: 22, title: "Documentación Oficial Claude", platform: "Anthropic", tool: "claude", price: "free", duration: "Referencia", url: "https://docs.anthropic.com/", cert: false },
+
+            // Gemini
+            { id: 30, title: "Domina la IA con Gemini (OFICIAL Google)", platform: "Google Skillshop", tool: "gemini", price: "free", duration: "1 hora", url: "https://skillshop.exceedlms.com/student/path/1282", cert: true },
+            { id: 31, title: "Inmersión IA con Google Gemini", platform: "Alura Latam", tool: "gemini", price: "free", duration: "Intensivo", url: "https://www.alura.com.br/cursos-online-inteligencia-artificial/gemini", cert: false },
+            { id: 32, title: "Introducción a la IA generativa", platform: "Google Cloud Skills", tool: "gemini", price: "free", duration: "1 hora", url: "https://www.cloudskillsboost.google/course_templates/536", cert: true },
+
+            // Copilot
+            { id: 40, title: "Copilot: Fundamentos de IA de Microsoft", platform: "Santander Open Academy", tool: "copilot", price: "free", duration: "8 horas", url: "https://www.santanderopenacademy.com/es/courses/copilot-fundamentos-ia-microsoft.html", cert: true },
+            { id: 41, title: "Crear indicaciones eficaces para M365 Copilot", platform: "Microsoft Learn", tool: "copilot", price: "free", duration: "Variable", url: "https://learn.microsoft.com/es-es/training/modules/create-effective-prompts-copilot/", cert: false },
+            { id: 42, title: "Curso Completo Copilot M365 (3.5 horas)", platform: "YouTube", tool: "copilot", price: "free", duration: "3.5 horas", url: "https://www.youtube.com/watch?v=JdvzazscjjE", cert: false },
+
+            // Canva
+            { id: 50, title: "Canva de 0 a 100 — Clàudia Cánovas", platform: "Domestika", tool: "canva", price: "paid", priceAmount: 12, duration: "Variable", url: "https://www.domestika.org/en/courses/4855-canva-for-beginners-create-professional-designs", cert: true, rating: 4.9 },
+            { id: 51, title: "La IA de Canva es IMPRESIONANTE: Magic Studio", platform: "YouTube", tool: "canva", price: "free", duration: "15 min", url: "https://www.youtube.com/watch?v=f5NREtAEz-s", cert: false },
+            { id: 52, title: "Funciones mágicas de Canva — Roger Coles", platform: "Domestika", tool: "canva", price: "paid", priceAmount: 12, duration: "Variable", url: "https://www.domestika.org/en/courses/5225-creating-stunning-designs-using-canva-s-magic-features", cert: true },
+
+            // Excel + IA
+            { id: 60, title: "Cómo Usar Excel con ChatGPT", platform: "YouTube", tool: "excel", price: "free", duration: "20 min", url: "https://www.youtube.com/watch?v=QVLJ7WZnTJg", cert: false },
+            { id: 61, title: "Complete Course: ChatGPT Applied to Excel", platform: "YouTube", tool: "excel", price: "free", duration: "Completo", url: "https://www.youtube.com/watch?v=85yRpFpOxek", cert: false },
+            { id: 62, title: "Julius AI — Analiza Excel sin código", platform: "julius.ai", tool: "excel", price: "free", duration: "Herramienta", url: "https://julius.ai/", cert: false },
+
+            // Prompt Engineering
+            { id: 70, title: "Guía de Ingeniería de Prompt", platform: "promptingguide.ai", tool: "general", price: "free", duration: "Referencia", url: "https://www.promptingguide.ai/es", cert: false },
+            { id: 71, title: "Prompt Engineering Foundation en español", platform: "Udemy", tool: "general", price: "paid", priceAmount: 15, duration: "7 horas", url: "https://www.udemy.com/course/prompt-engineering-foundation-spanish/", cert: true },
+            { id: 72, title: "Prompt Engineering con ChatGPT — La guía definitiva", platform: "Udemy", tool: "chatgpt", price: "paid", priceAmount: 15, duration: "Variable", url: "https://www.udemy.com/course/prompt-engineering-chatgpt/", cert: true, rating: 4.7 },
+
+            // Marketing
+            { id: 80, title: "ChatGPT 5: Marketing y Branding con IA (Best Seller)", platform: "Udemy", tool: "chatgpt", price: "paid", priceAmount: 15, duration: "Variable", url: "https://www.udemy.com/course/chatgpt-marketing-branding-ia/", cert: true, rating: 4.7, best: true },
+            { id: 81, title: "Creación de contenido con IA — Núria Mañé", platform: "Domestika", tool: "general", price: "paid", priceAmount: 10, duration: "Variable", url: "https://www.domestika.org/en/courses/5333-content-creation-with-ai", cert: true, rating: 4.9 },
+
+            // Ética
+            { id: 90, title: "IA: Ética en la IA Educativa (UNAM)", platform: "Coursera", tool: "general", price: "free", duration: "Variable", url: "https://www.coursera.org/learn/ia-etica", cert: true, rating: 4.9 },
+            { id: 91, title: "Introduction to Responsible AI — Español", platform: "Coursera", tool: "general", price: "free", duration: "Variable", url: "https://www.coursera.org/learn/introduction-to-responsible-ai-es", cert: true },
+            { id: 92, title: "Qué son las Alucinaciones de la IA", platform: "YouTube", tool: "general", price: "free", duration: "10 min", url: "https://www.youtube.com/watch?v=TX1Hen-ZS-g", cert: false },
+
+            // Herramientas adicionales
+            { id: 100, title: "Gamma.app — Presentaciones con IA", platform: "Gamma", tool: "general", price: "free", duration: "Herramienta", url: "https://gamma.app/", cert: false },
+            { id: 101, title: "Perplexity AI — Búsqueda con IA", platform: "Perplexity", tool: "general", price: "free", duration: "Herramienta", url: "https://www.perplexity.ai/", cert: false },
+            { id: 102, title: "DALL-E 3 vía Bing Image Creator", platform: "Microsoft", tool: "general", price: "free", duration: "Herramienta", url: "https://www.bing.com/images/create", cert: false },
+
+            // Monetización y Freelancing
+            { id: 110, title: "Cómo ganar dinero con ChatGPT", platform: "YouTube", tool: "chatgpt", price: "free", duration: "Variable", url: "https://www.youtube.com/results?search_query=ganar+dinero+chatgpt+freelance+español", cert: false },
+            { id: 111, title: "Fiverr — Plataforma de freelance", platform: "Fiverr", tool: "general", price: "free", duration: "Plataforma", url: "https://www.fiverr.com/", cert: false },
+            { id: 112, title: "Upwork — Trabajos remotos", platform: "Upwork", tool: "general", price: "free", duration: "Plataforma", url: "https://www.upwork.com/", cert: false },
+            { id: 113, title: "Workana — Freelance en español", platform: "Workana", tool: "general", price: "free", duration: "Plataforma", url: "https://www.workana.com/", cert: false },
+
+            // Automatización
+            { id: 120, title: "Make (Integromat) — Automatización", platform: "Make", tool: "general", price: "free", duration: "Herramienta", url: "https://www.make.com/", cert: false },
+            { id: 121, title: "n8n — Automatización open source", platform: "n8n", tool: "general", price: "free", duration: "Herramienta", url: "https://n8n.io/", cert: false },
+            { id: 122, title: "Zapier — Conecta apps con IA", platform: "Zapier", tool: "general", price: "free", duration: "Herramienta", url: "https://zapier.com/", cert: false },
+            { id: 123, title: "Curso de Make desde cero", platform: "YouTube", tool: "general", price: "free", duration: "3+ horas", url: "https://www.youtube.com/results?search_query=curso+make+integromat+español", cert: false },
+
+            // NotebookLM
+            { id: 130, title: "NotebookLM — Tu segundo cerebro", platform: "Google", tool: "gemini", price: "free", duration: "Herramienta", url: "https://notebooklm.google.com/", cert: false }
+        ];
+
+        // ==================== STATE ====================
+
+        let currentWeekId = null;
+        let currentQuizIndex = 0;
+        let quizAnswers = [];
+
+        const STATE_KEYS = {
+            progress: 'aiCourseProgress',
+            notes: 'aiCourseNotes',
+            badges: 'aiCourseBadges',
+            streak: 'aiCourseStreak',
+            lastActive: 'aiCourseLastActive',
+            darkMode: 'aiCourseDarkMode',
+            visited: 'aiCourseVisited',
+            quizResults: 'aiCourseQuizResults'
+        };
+
+        function getState(key, defaultVal = {}) {
+            try {
+                const data = localStorage.getItem(STATE_KEYS[key]);
+                return data ? JSON.parse(data) : defaultVal;
+            } catch (e) {
+                console.warn('Error reading localStorage:', e);
+                return defaultVal;
+            }
+        }
+
+        function setState(key, value) {
+            try {
+                localStorage.setItem(STATE_KEYS[key], JSON.stringify(value));
+            } catch (e) {
+                console.warn('Error writing to localStorage:', e);
+                showToast('⚠️ No se pudo guardar el progreso. Verifica que tu navegador permita almacenamiento local.', 'error');
+            }
+        }
+
+        // Función para exportar progreso
+        function exportProgress() {
+            const data = {
+                progress: getState('progress'),
+                notes: getState('notes'),
+                badges: getState('badges', []),
+                quizResults: getState('quizResults', {}),
+                streak: localStorage.getItem(STATE_KEYS.streak),
+                exportDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `curso-ia-progreso-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('📥 Progreso exportado correctamente', 'success');
+        }
+
+        // Función para resetear progreso
+        function resetProgress() {
+            if (confirm('¿Estás seguro de que quieres reiniciar TODO tu progreso? Esta acción no se puede deshacer.')) {
+                Object.values(STATE_KEYS).forEach(key => localStorage.removeItem(key));
+                showToast('🔄 Progreso reiniciado', 'info');
+                setTimeout(() => location.reload(), 1000);
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+
+        function init() {
+            loadDarkMode();
+            updateStreak();
+            renderSidebar();
+            updateProgressUI();
+            updateStatsUI();
+            initChart();
+            renderBadgesPreview();
+            checkBadges();
+        }
+
+        // ==================== DARK MODE ====================
+
+        function loadDarkMode() {
+            const darkMode = localStorage.getItem(STATE_KEYS.darkMode) === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark');
+                document.getElementById('dark-mode-btn').textContent = '☀️';
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem(STATE_KEYS.darkMode, isDark);
+            document.getElementById('dark-mode-btn').textContent = isDark ? '☀️' : '🌙';
+
+            // Recreate chart with new colors
+            initChart();
+        }
+
+        // ==================== STREAK ====================
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem(STATE_KEYS.lastActive);
+            let streak = parseInt(localStorage.getItem(STATE_KEYS.streak) || '0');
+
+            if (lastActive !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+
+                if (lastActive === yesterday.toDateString()) {
+                    streak++;
+                } else if (lastActive !== today) {
+                    streak = 1;
+                }
+
+                localStorage.setItem(STATE_KEYS.lastActive, today);
+                localStorage.setItem(STATE_KEYS.streak, streak);
+            }
+
+            document.getElementById('streak-count').textContent = `${streak} día${streak !== 1 ? 's' : ''}`;
+            document.getElementById('streak-icon').textContent = streak >= 7 ? '🔥' : streak >= 3 ? '🔥' : '❄️';
+        }
+
+        function getStreak() {
+            return parseInt(localStorage.getItem(STATE_KEYS.streak) || '0');
+        }
+
+        // ==================== SIDEBAR & NAVIGATION ====================
+
+        function renderSidebar() {
+            const weekListEl = document.getElementById('week-list');
+            weekListEl.innerHTML = '';
+
+            curriculum.forEach((week, index) => {
+                const isCompleted = isWeekComplete(week.id);
+                const isActive = currentWeekId === week.id;
+
+                const btn = document.createElement('button');
+                btn.className = `week-card w-full text-left p-3 rounded-lg border border-theme mb-2 flex items-center justify-between group ${isActive ? 'active-week' : 'bg-secondary hover:bg-tertiary'}`;
+                btn.onclick = () => loadWeek(index);
+
+                btn.innerHTML = `
+                    <div>
+                        <div class="text-[10px] font-bold text-muted uppercase">Semana ${week.id}</div>
+                        <div class="text-sm font-semibold text-primary">${week.title}</div>
+                    </div>
+                    ${isCompleted ? '<span class="text-green-500 font-bold">✓</span>' : '<span class="text-muted group-hover:text-secondary">○</span>'}
+                `;
+                weekListEl.appendChild(btn);
+            });
+        }
+
+        function loadWeek(index) {
+            const week = curriculum[index];
+            currentWeekId = week.id;
+
+            // Track visited weeks
+            const visited = getState('visited', []);
+            if (!visited.includes(week.id)) {
+                visited.push(week.id);
+                setState('visited', visited);
+            }
+
+            // Toggle views
+            document.getElementById('intro-view').classList.add('hidden');
+            document.getElementById('week-content').classList.remove('hidden');
+
+            // Populate header
+            document.getElementById('week-label').textContent = `SEMANA ${week.id}`;
+            document.getElementById('week-title').textContent = week.title;
+            document.getElementById('week-desc').textContent = week.desc;
+            document.getElementById('pro-tip').textContent = week.tip;
+
+            // Show quiz button if week has tasks
+            const quizBtn = document.getElementById('quiz-btn');
+            if (quizzes[week.id]) {
+                quizBtn.classList.remove('hidden');
+            } else {
+                quizBtn.classList.add('hidden');
+            }
+
+            // Render resources
+            renderResources(week);
+
+            // Render tasks
+            renderTasks(week);
+
+            // Load notes
+            loadNotes(week.id);
+
+            // Update navigation buttons
+            document.getElementById('prev-week-btn').disabled = index === 0;
+            document.getElementById('prev-week-btn').classList.toggle('opacity-50', index === 0);
+            document.getElementById('next-week-btn').disabled = index === curriculum.length - 1;
+            document.getElementById('next-week-btn').textContent = index === curriculum.length - 1 ? '🎓 ¡Finalizar!' : 'Siguiente Semana →';
+
+            renderSidebar();
+            checkBadges();
+        }
+
+        function renderResources(week) {
+            const container = document.getElementById('resource-list');
+            container.innerHTML = '';
+
+            week.resources.forEach(res => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-3 bg-tertiary rounded-lg border border-theme hover:border-amber-300 transition-colors";
+
+                const priceTag = res.free
+                    ? '<span class="price-tag-free text-[10px] px-1.5 py-0.5 rounded">🆓 Gratis</span>'
+                    : `<span class="price-tag-paid text-[10px] px-1.5 py-0.5 rounded">💰 ${res.price || '~$15'}</span>`;
+
+                item.innerHTML = `
+                    <div class="flex-1 pr-4">
+                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded">${res.type}</span>
+                            <span class="text-[10px] text-muted">⏱ ${res.time}</span>
+                            ${priceTag}
+                        </div>
+                        <h4 class="text-sm font-medium text-primary leading-tight">${res.title}</h4>
+                        <p class="text-[10px] text-muted mt-1">${res.platform}</p>
+                    </div>
+                    <a href="${res.url}" target="_blank" rel="noopener" class="flex-shrink-0 bg-secondary hover:bg-amber-600 hover:text-white text-amber-600 text-xs font-bold py-2 px-3 rounded border border-amber-200 dark:border-amber-800 transition-colors flex items-center gap-1">
+                        <span>▶</span> Ver
+                    </a>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderTasks(week) {
+            const container = document.getElementById('homework-list');
+            container.innerHTML = '';
+            const progress = getState('progress');
+
+            let completed = 0;
+            const total = week.tasks.length;
+
+            week.tasks.forEach((task, taskIndex) => {
+                const taskId = `w${week.id}-t${taskIndex}`;
+                const isChecked = progress[taskId] === true;
+                if (isChecked) completed++;
+
+                const item = document.createElement('label');
+                item.className = "flex items-start gap-3 p-3 rounded-lg cursor-pointer hover:bg-tertiary border border-transparent hover:border-theme transition-all select-none";
+                item.innerHTML = `
+                    <input type="checkbox" id="${taskId}" class="mt-1 w-4 h-4 text-amber-600 rounded border-gray-300 focus:ring-amber-500" ${isChecked ? 'checked' : ''}>
+                    <span class="text-sm text-secondary ${isChecked ? 'line-through text-muted' : ''}">${task}</span>
+                `;
+
+                item.querySelector('input').addEventListener('change', (e) => {
+                    const newProgress = getState('progress');
+                    newProgress[taskId] = e.target.checked;
+                    setState('progress', newProgress);
+
+                    const span = item.querySelector('span');
+                    if (e.target.checked) {
+                        span.classList.add('line-through', 'text-muted');
+                    } else {
+                        span.classList.remove('line-through', 'text-muted');
+                    }
+
+                    renderTasks(week);
+                    renderSidebar();
+                    updateProgressUI();
+                    updateStatsUI();
+                    checkBadges();
+                });
+
+                container.appendChild(item);
+            });
+
+            // Update week progress
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+            document.getElementById('week-progress-fill').style.width = `${percentage}%`;
+            document.getElementById('week-progress-text').textContent = `${completed} de ${total} tareas completadas`;
+        }
+
+        function prevWeek() {
+            const index = curriculum.findIndex(w => w.id === currentWeekId);
+            if (index > 0) loadWeek(index - 1);
+        }
+
+        function nextWeek() {
+            const index = curriculum.findIndex(w => w.id === currentWeekId);
+            if (index < curriculum.length - 1) {
+                loadWeek(index + 1);
+            } else {
+                showToast('🎓 ¡Felicidades! Has completado el curso', 'success');
+            }
+        }
+
+        // ==================== NOTES ====================
+
+        function loadNotes(weekId) {
+            const notes = getState('notes');
+            document.getElementById('week-notes').value = notes[`week_${weekId}`] || '';
+        }
+
+        function saveNotes() {
+            if (!currentWeekId) return;
+            const notes = getState('notes');
+            notes[`week_${currentWeekId}`] = document.getElementById('week-notes').value;
+            setState('notes', notes);
+            checkBadges();
+        }
+
+        function getWeeksWithNotes() {
+            const notes = getState('notes');
+            return Object.values(notes).filter(n => n && n.trim().length > 0).length;
+        }
+
+        // ==================== PROGRESS ====================
+
+        function isWeekComplete(weekId) {
+            const week = curriculum.find(w => w.id === weekId);
+            if (!week) return false;
+            const progress = getState('progress');
+            return week.tasks.every((_, idx) => progress[`w${weekId}-t${idx}`] === true);
+        }
+
+        function getTotalCompletedTasks() {
+            const progress = getState('progress');
+            return Object.values(progress).filter(v => v === true).length;
+        }
+
+        function getTotalTasks() {
+            return curriculum.reduce((sum, week) => sum + week.tasks.length, 0);
+        }
+
+        function getCompletedWeeks() {
+            return curriculum.filter(w => isWeekComplete(w.id)).length;
+        }
+
+        function getVisitedWeeks() {
+            return getState('visited', []).length;
+        }
+
+        function getProgressPercentage() {
+            const total = getTotalTasks();
+            const completed = getTotalCompletedTasks();
+            return total === 0 ? 0 : Math.round((completed / total) * 100);
+        }
+
+        function updateProgressUI() {
+            const percentage = getProgressPercentage();
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `${percentage}%`;
+
+            if (percentage === 100) {
+                document.getElementById('progress-bar').classList.remove('bg-amber-500');
+                document.getElementById('progress-bar').classList.add('bg-green-500');
+            }
+        }
+
+        function updateStatsUI() {
+            document.getElementById('weeks-completed').textContent = `${getCompletedWeeks()}/12`;
+            document.getElementById('tasks-completed').textContent = `${getTotalCompletedTasks()}/${getTotalTasks()}`;
+
+            const quizResults = getState('quizResults', {});
+            const passedQuizzes = Object.values(quizResults).filter(r => r.passed).length;
+            document.getElementById('quizzes-passed').textContent = `${passedQuizzes}/12`;
+        }
+
+        // ==================== BADGES ====================
+
+        function checkBadges() {
+            const unlockedBadges = getState('badges', []);
+            let newBadge = null;
+
+            badges.forEach(badge => {
+                if (!unlockedBadges.includes(badge.id) && badge.condition()) {
+                    unlockedBadges.push(badge.id);
+                    newBadge = badge;
+                }
+            });
+
+            if (newBadge) {
+                setState('badges', unlockedBadges);
+                showToast(`🏆 ¡Nuevo logro! ${newBadge.icon} ${newBadge.name}`, 'badge');
+                renderBadgesPreview();
+            }
+        }
+
+        function hasPerfectQuiz() {
+            const results = getState('quizResults', {});
+            return Object.values(results).some(r => r.perfect);
+        }
+
+        function renderBadgesPreview() {
+            const container = document.getElementById('badges-preview');
+            if (!container) return;
+
+            const unlockedBadges = getState('badges', []);
+            container.innerHTML = badges.slice(0, 6).map(badge => {
+                const unlocked = unlockedBadges.includes(badge.id);
+                return `<span class="badge text-2xl ${unlocked ? 'unlocked' : ''}" title="${badge.name}">${badge.icon}</span>`;
+            }).join('');
+        }
+
+        function openBadges() {
+            document.getElementById('badges-modal').classList.remove('hidden');
+            renderBadgesList();
+        }
+
+        function closeBadges() {
+            document.getElementById('badges-modal').classList.add('hidden');
+        }
+
+        function renderBadgesList() {
+            const container = document.getElementById('badges-list');
+            const unlockedBadges = getState('badges', []);
+
+            document.getElementById('badges-count').textContent = `${unlockedBadges.length} de ${badges.length} desbloqueados`;
+
+            container.innerHTML = badges.map(badge => {
+                const unlocked = unlockedBadges.includes(badge.id);
+                return `
+                    <div class="badge ${unlocked ? 'unlocked' : ''} bg-tertiary p-4 rounded-xl text-center border border-theme">
+                        <div class="text-4xl mb-2">${badge.icon}</div>
+                        <h4 class="font-bold text-primary text-sm">${badge.name}</h4>
+                        <p class="text-xs text-muted mt-1">${badge.desc}</p>
+                        ${unlocked ? '<span class="text-xs text-green-500 mt-2 block">✓ Desbloqueado</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== QUIZ ====================
+
+        function openQuiz() {
+            if (!currentWeekId || !quizzes[currentWeekId]) return;
+
+            document.getElementById('quiz-modal').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-content').classList.remove('hidden');
+
+            currentQuizIndex = 0;
+            quizAnswers = [];
+            renderQuizQuestion();
+        }
+
+        function closeQuiz() {
+            document.getElementById('quiz-modal').classList.add('hidden');
+        }
+
+        function renderQuizQuestion() {
+            const questions = quizzes[currentWeekId];
+            const q = questions[currentQuizIndex];
+
+            document.getElementById('quiz-progress').textContent = `Pregunta ${currentQuizIndex + 1} de ${questions.length}`;
+
+            const container = document.getElementById('quiz-content');
+            container.innerHTML = `
+                <h3 class="text-lg font-bold text-primary mb-6">${q.question}</h3>
+                <div class="space-y-3">
+                    ${q.options.map((opt, idx) => `
+                        <button onclick="selectAnswer(${idx})" class="w-full text-left p-4 bg-tertiary hover:bg-amber-100 dark:hover:bg-amber-900 border border-theme hover:border-amber-500 rounded-lg transition-colors text-secondary">
+                            <span class="font-bold mr-2">${String.fromCharCode(65 + idx)}.</span> ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function selectAnswer(idx) {
+            const questions = quizzes[currentWeekId];
+            const q = questions[currentQuizIndex];
+            const isCorrect = idx === q.correct;
+
+            quizAnswers.push({ questionIndex: currentQuizIndex, selected: idx, correct: isCorrect });
+
+            // Show feedback
+            const container = document.getElementById('quiz-content');
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === q.correct) {
+                    btn.classList.add('bg-green-100', 'dark:bg-green-900', 'border-green-500');
+                } else if (i === idx && !isCorrect) {
+                    btn.classList.add('bg-red-100', 'dark:bg-red-900', 'border-red-500');
+                }
+            });
+
+            // Add explanation
+            container.innerHTML += `
+                <div class="mt-4 p-4 ${isCorrect ? 'bg-green-50 dark:bg-green-900/30 border-green-200' : 'bg-red-50 dark:bg-red-900/30 border-red-200'} border rounded-lg">
+                    <p class="text-sm ${isCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}">
+                        ${isCorrect ? '✓ ¡Correcto!' : '✗ Incorrecto'} ${q.explanation}
+                    </p>
+                </div>
+                <button onclick="nextQuestion()" class="mt-4 w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium">
+                    ${currentQuizIndex < questions.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}
+                </button>
+            `;
+        }
+
+        function nextQuestion() {
+            const questions = quizzes[currentWeekId];
+            currentQuizIndex++;
+
+            if (currentQuizIndex >= questions.length) {
+                showQuizResults();
+            } else {
+                renderQuizQuestion();
+            }
+        }
+
+        function showQuizResults() {
+            const correct = quizAnswers.filter(a => a.correct).length;
+            const total = quizAnswers.length;
+            const percentage = Math.round((correct / total) * 100);
+            const passed = percentage >= 70;
+            const perfect = percentage === 100;
+
+            // Save results
+            const results = getState('quizResults', {});
+            results[currentWeekId] = { correct, total, passed, perfect };
+            setState('quizResults', results);
+
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            document.getElementById('quiz-result-icon').textContent = perfect ? '🏆' : passed ? '🎉' : '📚';
+            document.getElementById('quiz-result-title').textContent = perfect ? '¡Perfecto!' : passed ? '¡Bien hecho!' : 'Sigue practicando';
+            document.getElementById('quiz-result-text').textContent = `Obtuviste ${correct}/${total} respuestas correctas (${percentage}%)`;
+
+            updateStatsUI();
+            checkBadges();
+        }
+
+        // ==================== LIBRARY ====================
+
+        function openLibrary() {
+            document.getElementById('library-modal').classList.remove('hidden');
+            filterLibrary();
+        }
+
+        function closeLibrary() {
+            document.getElementById('library-modal').classList.add('hidden');
+        }
+
+        function filterLibrary() {
+            const toolFilter = document.getElementById('filter-tool').value;
+            const priceFilter = document.getElementById('filter-price').value;
+            const platformFilter = document.getElementById('filter-platform').value;
+
+            let filtered = resourceLibrary;
+
+            if (toolFilter) {
+                filtered = filtered.filter(r => r.tool === toolFilter);
+            }
+
+            if (priceFilter) {
+                if (priceFilter === 'free') {
+                    filtered = filtered.filter(r => r.price === 'free');
+                } else if (priceFilter === 'paid') {
+                    filtered = filtered.filter(r => r.price === 'paid');
+                } else if (priceFilter === 'cert') {
+                    filtered = filtered.filter(r => r.cert);
+                }
+            }
+
+            if (platformFilter) {
+                const platformMap = {
+                    youtube: 'YouTube',
+                    coursera: 'Coursera',
+                    udemy: 'Udemy',
+                    domestika: 'Domestika',
+                    google: ['Google Skillshop', 'Google Cloud Skills'],
+                    microsoft: ['Microsoft Learn', 'Santander Open Academy']
+                };
+                const platforms = platformMap[platformFilter];
+                if (Array.isArray(platforms)) {
+                    filtered = filtered.filter(r => platforms.some(p => r.platform.includes(p)));
+                } else {
+                    filtered = filtered.filter(r => r.platform.includes(platforms));
+                }
+            }
+
+            renderLibrary(filtered);
+        }
+
+        function renderLibrary(resources) {
+            const container = document.getElementById('library-list');
+
+            if (resources.length === 0) {
+                container.innerHTML = '<div class="col-span-2 text-center py-12 text-muted">No se encontraron recursos con esos filtros.</div>';
+                return;
+            }
+
+            container.innerHTML = resources.map(r => {
+                let priceTag = '';
+                if (r.price === 'free') {
+                    priceTag = '<span class="price-tag-free text-xs px-2 py-1 rounded">🆓 Gratis</span>';
+                } else {
+                    priceTag = `<span class="price-tag-paid text-xs px-2 py-1 rounded">💰 ~$${r.priceAmount || 15}</span>`;
+                }
+
+                const certTag = r.cert ? '<span class="price-tag-cert text-xs px-2 py-1 rounded">🎓 Certificado</span>' : '';
+                const bestTag = r.best ? '<span class="price-tag-best text-xs px-2 py-1 rounded">⭐ Best Seller</span>' : '';
+                const ratingTag = r.rating ? `<span class="text-xs text-muted">⭐ ${r.rating}</span>` : '';
+
+                return `
+                    <a href="${r.url}" target="_blank" rel="noopener" class="block bg-tertiary hover:bg-amber-50 dark:hover:bg-amber-900/30 p-4 rounded-xl border border-theme hover:border-amber-300 transition-colors">
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            ${priceTag}
+                            ${certTag}
+                            ${bestTag}
+                        </div>
+                        <h4 class="font-semibold text-primary mb-1">${r.title}</h4>
+                        <div class="flex items-center gap-2 text-xs text-muted">
+                            <span>${r.platform}</span>
+                            <span>•</span>
+                            <span>${r.duration}</span>
+                            ${ratingTag}
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // ==================== TOAST ====================
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'badge' ? 'bg-purple-500' : 'bg-amber-500';
+
+            toast.className = `toast ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg max-w-sm`;
+            toast.innerHTML = message;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ==================== CHART ====================
+
+        function initChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            const isDark = document.body.classList.contains('dark');
+
+            // Destroy existing chart if any
+            if (window.radarChartInstance) {
+                window.radarChartInstance.destroy();
+            }
+
+            window.radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Creatividad', 'Lógica', 'Web', 'Docs', 'Fácil'],
+                    datasets: [
+                        {
+                            label: 'ChatGPT',
+                            data: [70, 90, 60, 70, 95],
+                            fill: true,
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            borderColor: 'rgb(16, 185, 129)',
+                            pointBackgroundColor: 'rgb(16, 185, 129)'
+                        },
+                        {
+                            label: 'Gemini',
+                            data: [75, 80, 100, 80, 85],
+                            fill: true,
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            pointBackgroundColor: 'rgb(59, 130, 246)'
+                        },
+                        {
+                            label: 'Claude',
+                            data: [95, 85, 40, 100, 80],
+                            fill: true,
+                            backgroundColor: 'rgba(249, 115, 22, 0.2)',
+                            borderColor: 'rgb(249, 115, 22)',
+                            pointBackgroundColor: 'rgb(249, 115, 22)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: { line: { borderWidth: 2 } },
+                    scales: {
+                        r: {
+                            angleLines: { display: true, color: isDark ? '#475569' : '#e5e7eb' },
+                            grid: { color: isDark ? '#475569' : '#e5e7eb' },
+                            pointLabels: { font: { size: 10 }, color: isDark ? '#94a3b8' : '#6b7280' },
+                            ticks: { display: false, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, color: isDark ? '#94a3b8' : '#6b7280' } }
+                    }
+                }
+            });
+        }
+
+        // ==================== MOBILE MENU ====================
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const sidebar = document.querySelector('nav');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('fixed');
+            sidebar.classList.toggle('inset-0');
+            sidebar.classList.toggle('z-40');
+            sidebar.classList.toggle('w-full');
+
+            const btn = document.getElementById('mobile-menu-btn');
+            btn.textContent = sidebar.classList.contains('fixed') ? '✕' : '☰';
+        });
+
+        // ==================== START ====================
+        init();
+    </script>
+</body>
+</html>
